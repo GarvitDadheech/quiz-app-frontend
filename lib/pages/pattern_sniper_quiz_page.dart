@@ -1,27 +1,11 @@
 import 'package:flutter/material.dart';
+import '../components/custom_app_bar.dart';
 
 class PatternSniperQuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF9370DB),
-        elevation: 0,
-        title: Text('\$112,000.00',
-            style: TextStyle(fontSize: 24, color: Colors.white)),
-        centerTitle: true,
-        actions: [
-          Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Text('PRO', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -57,7 +41,8 @@ class PatternSniperQuizPage extends StatelessWidget {
                   leading: Icon(Icons.show_chart, color: Colors.greenAccent),
                   title: Text(
                     'Learn technical analysis',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     'Try to determine the price moves by analyzing real historical chart patterns and indicators.',
@@ -72,10 +57,12 @@ class PatternSniperQuizPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
-                  leading: Icon(Icons.account_balance, color: Colors.greenAccent),
+                  leading:
+                      Icon(Icons.account_balance, color: Colors.greenAccent),
                   title: Text(
                     'Master fundamental analysis',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     'Discover how macroeconomics, politics, and news influence various assets.',
@@ -93,7 +80,8 @@ class PatternSniperQuizPage extends StatelessWidget {
                   leading: Icon(Icons.assessment, color: Colors.greenAccent),
                   title: Text(
                     'Test your knowledge',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     'Assess and improve your knowledge of various theoretical terms.',
