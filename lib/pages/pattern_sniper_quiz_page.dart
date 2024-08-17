@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../components/custom_app_bar.dart';
 import '../components/custom_bottom_navigation_bar.dart';
 import '../components/custom_drawer_menu.dart';
+import 'quiz_question_page.dart';
+
 class PatternSniperQuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -94,7 +96,12 @@ class PatternSniperQuizPage extends StatelessWidget {
               SizedBox(height: 18),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QuizQuestionPage(quizId: 1)), // Replace 1 with actual quiz ID
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF00C18E),
                     shape: RoundedRectangleBorder(
@@ -108,7 +115,7 @@ class PatternSniperQuizPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 50), // Add some space at the bottom
+              SizedBox(height: 50),
             ],
           ),
         ),

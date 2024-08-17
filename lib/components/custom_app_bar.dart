@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
-import 'custom_drawer_menu.dart';
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 
   CustomAppBar({Key? key})
       : preferredSize = Size.fromHeight(kToolbarHeight),
         super(key: key);
+
+  @override
+  _CustomAppBarState createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  Future<double> fetchUserCash() async {
+    final response = await http.get(Uri.parse('http://localhost:8080/user-cash/1')); // Replace 1 with actual user ID
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['cash_amount'];
+    } else {
+      throw Exception('Failed to load user cash');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +39,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
-      title: Text(
-        '\$112,000.00',
-        style: TextStyle(fontSize: 24, color: Colors.white),
+      title: FutureBuilder<double>(
+        future: fetchUserCash(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(color: Colors.white);
+          } else if (snapshot.hasError) {
+            return Text('Error', style: TextStyle(fontSize: 24, color: Colors.white));
+          } else {
+            return Text(
+              '\$${snapshot.data?.toStringAsFixed(2) ?? '0.00'}',
+              style: TextStyle(fontSize: 24, color: Colors.white),
+            );
+          }
+        },
       ),
       iconTheme: IconThemeData(color: Colors.white),
       actions: [
@@ -39,10 +67,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1.0), // Height of the line
+        preferredSize: Size.fromHeight(1.0),
         child: Container(
-          color: Colors.white, // Color of the line
-          height: 1.0, // Height of the line
+          color: Colors.white,
+          height: 1.0,
         ),
       ),
     );
