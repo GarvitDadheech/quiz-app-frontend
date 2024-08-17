@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/homepage.dart'; // Import the HomePage widget
+import '../pages/implement_soon_page.dart'; // Import the CommonPage widget
 
 class CustomBottomNavigationBar extends StatelessWidget {
   @override
@@ -16,18 +17,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
               MaterialPageRoute(builder: (context) => HomePage()),
             );
             break;
-          // Handle other tabs if needed
           case 1:
-            // Navigate to Portfolio page
-            break;
           case 2:
-            // Navigate to Trade page
-            break;
           case 3:
-            // Navigate to Profile page
-            break;
           case 4:
-            // Navigate to Leaderboard page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CommonPage(),
+              ),
+            );
             break;
         }
       },
