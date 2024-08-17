@@ -1,10 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../components/custom_app_bar.dart';
 import '../components/custom_bottom_navigation_bar.dart';
 import '../components/custom_drawer_menu.dart';
 import 'quiz_question_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class PatternSniperQuizPage extends StatelessWidget {
+class PatternSniperQuizPage extends StatefulWidget {
+  @override
+  _PatternSniperQuizPageState createState() => _PatternSniperQuizPageState();
+}
+
+class _PatternSniperQuizPageState extends State<PatternSniperQuizPage> {
+  Future<int> _fetchRecentQuizId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    final response =
+        await http.get(Uri.parse('http://localhost:8080/recent-quiz/$userId'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data;
+    } else {
+      throw Exception('Failed to load recent quiz ID');
+    }
+  }
+
+  void _startQuiz(BuildContext context) async {
+    try {
+      final recentQuizId = await _fetchRecentQuizId();
+      final newQuizId = recentQuizId + 1;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => QuizQuestionPage(quizId: newQuizId)),
+      );
+    } catch (e) {
+      // Handle the error (e.g., show an error message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load the quiz ID: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,12 +136,7 @@ class PatternSniperQuizPage extends StatelessWidget {
               SizedBox(height: 18),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QuizQuestionPage(quizId: 1)), // Replace 1 with actual quiz ID
-                    );
-                  },
+                  onPressed: () => _startQuiz(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF00C18E),
                     shape: RoundedRectangleBorder(
