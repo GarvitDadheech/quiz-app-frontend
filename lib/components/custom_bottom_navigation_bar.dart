@@ -1,33 +1,45 @@
 import 'package:flutter/material.dart';
-import '../pages/homepage.dart'; // Import the HomePage widget
-import '../pages/implement_soon_page.dart'; // Import the CommonPage widget
+import '../pages/homepage.dart';
+import '../pages/implement_soon_page.dart';
+import '../pages/leaderboard_page.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
+  final int currentIndex;
+
+  CustomBottomNavigationBar({this.currentIndex = 0});
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
-      currentIndex: 0, // Default index
+      currentIndex: currentIndex,
       onTap: (index) {
-        switch (index) {
-          case 0:
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-            break;
-          case 1:
-          case 2:
-          case 3:
-          case 4:
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CommonPage(),
-              ),
-            );
-            break;
+        if (index != currentIndex) {
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+              break;
+            case 4: // Leaderboard
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LeaderboardPage()),
+              );
+              break;
+            case 1:
+            case 2:
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CommonPage(),
+                ),
+              );
+              break;
+          }
         }
       },
       items: [

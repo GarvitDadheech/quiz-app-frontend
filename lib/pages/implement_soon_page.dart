@@ -5,18 +5,18 @@ class CommonPage extends StatelessWidget {
   final String emoji;
 
   CommonPage({
-    this.message = "To be implemented soon.",
+    this.message = "To be implemented soon. Sorry for the inconvenience.",
     this.emoji = "😔",
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 167, 126, 249), // Purple background
+      backgroundColor: Color(0xFF9370DB), // Purple background
       appBar: AppBar(
         title: Text("Under Construction"),
-        backgroundColor: Color.fromARGB(255, 251, 251, 251),
-        elevation: 8,
+        backgroundColor: Color(0xFF9370DB),
+        elevation: 0,
       ),
       body: Center(
         child: Column(
@@ -24,14 +24,14 @@ class CommonPage extends StatelessWidget {
           children: [
             Text(
               emoji,
-              style: TextStyle(fontSize: 200), // Large emoji
+              style: TextStyle(fontSize: 100), // Large emoji
             ),
             SizedBox(height: 20),
             Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 34,
+                fontSize: 24,
                 color: Colors.white,
               ),
             ),
