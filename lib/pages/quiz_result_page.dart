@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'homepage.dart';
 class QuizResultPage extends StatelessWidget {
   final int correctAnswers;
   final int bonusEarned;
@@ -40,7 +40,8 @@ class QuizResultPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.close, color: Colors.white),
-          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false),
+          onPressed: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false),
         ),
       ),
       body: Column(
@@ -59,7 +60,10 @@ class QuizResultPage extends StatelessWidget {
                     SizedBox(height: 20),
                     Text(
                       'Well done!',
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -91,7 +95,14 @@ class QuizResultPage extends StatelessWidget {
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  HomePage()), // Redirect to HomePage
+                          (Route<dynamic> route) =>
+                              false, // Remove all previous routes
+                        );
                       },
                       child: Text('Done', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
@@ -112,7 +123,8 @@ class QuizResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildResultCard({required String icon, required String title, required String value}) {
+  Widget _buildResultCard(
+      {required String icon, required String title, required String value}) {
     return Container(
       width: 100, // Adjust width as needed
       padding: EdgeInsets.all(16),
@@ -126,7 +138,11 @@ class QuizResultPage extends StatelessWidget {
           SizedBox(height: 8),
           Text(title, style: TextStyle(fontSize: 14, color: Colors.white70)),
           SizedBox(height: 4),
-          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
         ],
       ),
     );
