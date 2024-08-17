@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async'; // For Timer
 import 'quiz_result_page.dart';
 
 class QuizQuestionPage extends StatefulWidget {
@@ -19,11 +20,22 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
   bool isAnswerSubmitted = false;
   bool isAnswerCorrect = false;
   int correctAnswersCount = 0;
+  Timer? _timer;
+  int _elapsedSeconds = 0; // Timer starts from 0 seconds
 
   @override
   void initState() {
     super.initState();
     fetchQuestions();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedSeconds++;
+      });
+    });
   }
 
   Future<void> fetchQuestions() async {
@@ -89,6 +101,18 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
   }
 
   @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final secs = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -99,6 +123,21 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
           icon: Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        title: Text(
+          'Quiz',
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Center(
+              child: Text(
+                _formatTime(_elapsedSeconds),
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ),
+        ],
       ),
       body: questions.isEmpty
           ? Center(child: CircularProgressIndicator(color: Colors.white))
@@ -143,9 +182,9 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                                                 : Colors.red)
                                             : Color(0xFFB39DDB)) // Subtle shade of purple
                                         : Colors.white,
-                                minimumSize: Size(double.infinity, 50),
+                                minimumSize: Size(double.infinity, 60), // Increased size
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 elevation: 4, // Adding shadow
                               ),
@@ -170,10 +209,10 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                         duration: Duration(seconds: 1),
                         builder: (context, color, child) {
                           return Container(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: color!, width: 2),
                             ),
                             child: Text(
@@ -192,46 +231,48 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
               ),
             ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              child: Text(
-                isAnswerSubmitted ? 'Explanation' : 'Extra Hint',
-                style: TextStyle(color: Color(0xFF9370DB)),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: Size(120, 50),
-                side: BorderSide(color: Color(0xFF9370DB), width: 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                child: Text(
+                  isAnswerSubmitted ? 'Explanation' : 'Extra Hint',
+                  style: TextStyle(color: Color(0xFF9370DB)),
                 ),
-              ),
-              onPressed: () {
-                // Show hint or explanation
-              },
-            ),
-            SizedBox(width: 20),
-            ElevatedButton(
-              child: Text(
-                isAnswerSubmitted ? 'Continue' : 'Submit',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF4CAF50), 
-                minimumSize: Size(120, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  minimumSize: Size(120, 60),
+                  side: BorderSide(color: Color(0xFF9370DB), width: 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                onPressed: () {
+                  // Show hint or explanation
+                },
               ),
-              onPressed: selectedAnswerIndex != null
-                  ? (isAnswerSubmitted
-                      ? nextQuestion
-                      : submitAnswer)
-                  : null,
-            ),
-          ],
+              ElevatedButton(
+                child: Text(
+                  isAnswerSubmitted ? 'Continue' : 'Submit',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4CAF50), // Green color
+                  minimumSize: Size(120, 60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: selectedAnswerIndex != null
+                    ? (isAnswerSubmitted
+                        ? nextQuestion
+                        : submitAnswer)
+                    : null,
+              ),
+            ],
+          ),
         ),
       ),
     );
