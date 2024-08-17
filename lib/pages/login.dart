@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'homepage.dart';
 import 'register.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -33,6 +35,11 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (response.statusCode == 200) {
+      final userId = json.decode(response.body)['user_id'];
+      // Save user ID to shared preferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('userId', userId);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

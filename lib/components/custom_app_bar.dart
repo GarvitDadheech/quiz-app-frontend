@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   @override
@@ -16,10 +17,17 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   Future<double> fetchUserCash() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/user-cash/1')); // Replace 1 with actual user ID
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+    if (userId == null) {
+      throw Exception('User ID not found. Please log in again.');
+    }
+
+    final response = await http.get(Uri.parse('http://localhost:8080/user-cash/$userId'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return data['cash_amount'];
+      return (data['cash_amount'] as num).toDouble();;
     } else {
       throw Exception('Failed to load user cash');
     }

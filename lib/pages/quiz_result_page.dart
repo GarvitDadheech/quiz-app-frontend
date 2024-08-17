@@ -1,24 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'homepage.dart';
+
 class QuizResultPage extends StatelessWidget {
   final int correctAnswers;
   final int bonusEarned;
-  final String timeTaken; // Added parameter
+  final String timeTaken;
 
   QuizResultPage({
     required this.correctAnswers,
     required this.bonusEarned,
-    required this.timeTaken, // Added parameter
+    required this.timeTaken,
   });
 
-  Future<void> updateUserCash(int userId, int bonusEarned) async {
+  Future<double> fetchCurrentCash() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+    if (userId == null) {
+      throw Exception('User ID not found. Please log in again.');
+    }
+
+    final response = await http.get(Uri.parse('http://localhost:8080/user-cash/$userId'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return (data['cash_amount'] as num).toDouble();
+    } else {
+      throw Exception('Failed to load current cash amount');
+    }
+  }
+
+  Future<void> updateUserCash(int bonusEarned) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+    if (userId == null) {
+      throw Exception('User ID not found. Please log in again.');
+    }
+
+    final currentCash = await fetchCurrentCash();
+    final newCashAmount = currentCash + bonusEarned;
+
     final response = await http.post(
       Uri.parse('http://localhost:8080/update-user-cash'),
       body: json.encode({
         'user_id': userId,
-        'bonus_earned': bonusEarned,
+        'cash_amount': newCashAmount,
       }),
       headers: {'Content-Type': 'application/json'},
     );
@@ -31,7 +60,7 @@ class QuizResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Call the function to update user cash
-    updateUserCash(1, bonusEarned); // Replace 1 with actual user ID
+    updateUserCash(bonusEarned);
 
     return Scaffold(
       backgroundColor: Color(0xFF9370DB),
