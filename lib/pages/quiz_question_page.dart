@@ -89,11 +89,13 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
         isAnswerSubmitted = false;
       });
     } else {
+      // Pass the timeTaken parameter to QuizResultPage
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => QuizResultPage(
             correctAnswers: correctAnswersCount,
             bonusEarned: correctAnswersCount * 1000,
+            timeTaken: _formatTime(_elapsedSeconds), // Pass the formatted time
           ),
         ),
       );

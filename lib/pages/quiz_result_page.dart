@@ -5,8 +5,13 @@ import 'dart:convert';
 class QuizResultPage extends StatelessWidget {
   final int correctAnswers;
   final int bonusEarned;
+  final String timeTaken; // Added parameter
 
-  QuizResultPage({required this.correctAnswers, required this.bonusEarned});
+  QuizResultPage({
+    required this.correctAnswers,
+    required this.bonusEarned,
+    required this.timeTaken, // Added parameter
+  });
 
   Future<void> updateUserCash(int userId, int bonusEarned) async {
     final response = await http.post(
@@ -76,6 +81,11 @@ class QuizResultPage extends StatelessWidget {
                           title: 'Bonus earned',
                           value: '\$$bonusEarned',
                         ),
+                        _buildResultCard(
+                          icon: '⏱️',
+                          title: 'Time taken',
+                          value: timeTaken,
+                        ),
                       ],
                     ),
                     SizedBox(height: 30),
@@ -104,7 +114,7 @@ class QuizResultPage extends StatelessWidget {
 
   Widget _buildResultCard({required String icon, required String title, required String value}) {
     return Container(
-      width: 150,
+      width: 100, // Adjust width as needed
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.2),
