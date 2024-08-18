@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import '../pages/login.dart'; // Import your LoginPage
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -18,9 +20,16 @@ class CustomDrawer extends StatelessWidget {
                   Image.asset('assets/cartoon_image.png', height: 80),
                   SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      const url = 'https://www.instagram.com/threeinvesteers/?hl=en';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF00C18E), // Follow us button color
+                      backgroundColor: Color(0xFF00C18E), // Follow us button color
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -58,7 +67,12 @@ class CustomDrawer extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.login, color: Colors.white),
               title: Text('Login', style: TextStyle(color: Colors.white)),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
