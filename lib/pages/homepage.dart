@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF8A2BE2), // Darker purple
+                color: Color(0xFF8A2BE2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
@@ -36,7 +36,6 @@ class HomePage extends StatelessWidget {
                   child: Text('NEW', style: TextStyle(color: Colors.white)),
                 ),
                 onTap: () {
-                  // Navigate to Pattern Sniper Quiz Screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => PatternSniperQuizPage()),

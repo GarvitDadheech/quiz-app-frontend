@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async'; // For Timer
+import 'dart:async';
 import 'quiz_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -118,14 +118,13 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
       });
     } else {
       await updateRecentQuizAttempt(widget.quizId);
-      // Pass the timeTaken parameter to QuizResultPage
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => QuizResultPage(
             correctAnswers: correctAnswersCount,
             bonusEarned: correctAnswersCount * 1000,
             timeTaken: _formatTime(_elapsedSeconds),
-            currentQuizId: widget.quizId, // Pass the formatted time
+            currentQuizId: widget.quizId,
           ),
         ),
       );
@@ -134,7 +133,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -213,14 +212,14 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                                             ? Colors.green
                                             : Colors.red)
                                         : Color(
-                                            0xFFB39DDB)) // Subtle shade of purple
+                                            0xFFB39DDB)) 
                                     : Colors.white,
                                 minimumSize:
-                                    Size(double.infinity, 60), // Increased size
+                                    Size(double.infinity, 60),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                elevation: 4, // Adding shadow
+                                elevation: 4,
                               ),
                               onPressed: isAnswerSubmitted
                                   ? null
@@ -294,7 +293,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF4CAF50), // Green color
+                  backgroundColor: Color(0xFF4CAF50),
                   minimumSize: Size(120, 60),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

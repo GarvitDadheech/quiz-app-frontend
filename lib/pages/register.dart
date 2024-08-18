@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
         message = "Hooray! You're officially a part of our club. Redirecting you to the login page...";
       });
       Future.delayed(Duration(seconds: 2), () {
-        Navigator.pop(context); // Navigate back to the login page after delay
+        Navigator.pop(context);
       });
     } else if (response.statusCode == 409) {
       final responseBody = jsonDecode(response.body);
@@ -117,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 16.0), // Add padding from the bottom
+              padding: const EdgeInsets.only(bottom: 16.0),
               child: isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(

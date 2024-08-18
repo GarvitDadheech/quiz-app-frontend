@@ -12,7 +12,7 @@ class CommonPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF9370DB), // Purple background
+      backgroundColor: Color(0xFF9370DB),
       appBar: AppBar(
         title: Text("Under Construction"),
         backgroundColor: Color(0xFF9370DB),
@@ -24,7 +24,7 @@ class CommonPage extends StatelessWidget {
           children: [
             Text(
               emoji,
-              style: TextStyle(fontSize: 100), // Large emoji
+              style: TextStyle(fontSize: 100),
             ),
             SizedBox(height: 20),
             Text(

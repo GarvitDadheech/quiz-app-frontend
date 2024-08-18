@@ -115,7 +115,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
       throw Exception('Failed to update badges');
     }
 
-    return badgeIds; // Return the list of badge IDs
+    return badgeIds;
   }
 
   Future<Map<int, String>> fetchBadgeNames(List<int> badgeIds) async {
@@ -127,7 +127,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    final badgeNamesJson = data['badge_names'] as Map<String, dynamic>; // Ensure correct type
+    final badgeNamesJson = data['badge_names'] as Map<String, dynamic>;
     final badgeNames = badgeNamesJson.map<int, String>((key, value) {
       return MapEntry(int.parse(key), value as String);
     });
@@ -186,9 +186,9 @@ class _QuizResultPageState extends State<QuizResultPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  HomePage()), // Redirect to HomePage
+                                  HomePage()), 
                           (Route<dynamic> route) =>
-                              false, // Remove all previous routes
+                              false,
                         );
                       },
                       child: Text('Done', style: TextStyle(fontSize: 18)),
@@ -300,7 +300,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
   Widget _buildResultCard(
       {required String icon, required String title, required String value}) {
     return Container(
-      width: 100, // Adjust width as needed
+      width: 100,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.2),

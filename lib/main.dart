@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        scaffoldBackgroundColor: Color(0xFF9370DB), // Light purple background
+        scaffoldBackgroundColor: Color(0xFF9370DB),
       ),
       home: LoginPage(),
     );

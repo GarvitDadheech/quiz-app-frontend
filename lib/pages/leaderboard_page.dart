@@ -41,7 +41,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     return Scaffold(
       appBar: CustomAppBar(),
       drawer: CustomDrawer(),
-      backgroundColor: Color(0xFF9370DB), // Light purple background
+      backgroundColor: Color(0xFF9370DB),
       body: SafeArea(
         child: Column(
           children: [
@@ -101,7 +101,7 @@ class LeaderboardTile extends StatelessWidget {
               ? Colors.grey[400]
               : rank == 3
                   ? Colors.brown[300]
-                  : Color(0xFF9370DB), // Use purple background for other ranks
+                  : Color(0xFF9370DB),
       elevation: 2,
       margin: EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

@@ -61,7 +61,6 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Heading at the top
               Text(
                 'Stock Market Quiz',
                 style: TextStyle(
