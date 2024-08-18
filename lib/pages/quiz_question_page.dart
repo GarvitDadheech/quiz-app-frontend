@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // For Timer
 import 'quiz_result_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuizQuestionPage extends StatefulWidget {
   final int quizId;
@@ -21,13 +22,20 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
   bool isAnswerCorrect = false;
   int correctAnswersCount = 0;
   Timer? _timer;
-  int _elapsedSeconds = 0; // Timer starts from 0 seconds
+  int _elapsedSeconds = 0;
+  int? userId;
 
   @override
   void initState() {
     super.initState();
     fetchQuestions();
+    fetchUserId();
     _startTimer();
+  }
+
+  Future<void> fetchUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getInt('userId');
   }
 
   void _startTimer() {
@@ -54,11 +62,11 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
   Future submitAnswer() async {
     if (selectedAnswerIndex == null) return;
-
+  
     final response = await http.post(
       Uri.parse('http://localhost:8080/submit-answer'),
       body: json.encode({
-        'user_id': 1, // Replace with actual user ID
+        'user_id': userId,
         'quiz_id': widget.quizId,
         'question_id': questions[currentQuestionIndex]['id'],
         'answer_id': questions[currentQuestionIndex]['answers']
@@ -69,6 +77,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print(data);
       setState(() {
         isAnswerSubmitted = true;
         isAnswerCorrect = data['correct'];
@@ -81,7 +90,27 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
     }
   }
 
-  void nextQuestion() {
+  Future<void> updateRecentQuizAttempt(int quizId) async {
+    final url = 'http://localhost:8080/update-recent-quiz';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'user_id': userId,
+        'quiz_id': quizId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Quiz attempt updated successfully');
+    } else {
+      print('Failed to update quiz attempt: ${response.statusCode}');
+    }
+  }
+
+  void nextQuestion() async {
     if (currentQuestionIndex < questions.length - 1) {
       setState(() {
         currentQuestionIndex++;
@@ -89,6 +118,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
         isAnswerSubmitted = false;
       });
     } else {
+      await updateRecentQuizAttempt(widget.quizId);
       // Pass the timeTaken parameter to QuizResultPage
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -176,15 +206,17 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                               child: Text(entry.value['answer'],
                                   style: TextStyle(color: Colors.black)),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    selectedAnswerIndex == entry.key
-                                        ? (isAnswerSubmitted
-                                            ? (isAnswerCorrect
-                                                ? Colors.green
-                                                : Colors.red)
-                                            : Color(0xFFB39DDB)) // Subtle shade of purple
-                                        : Colors.white,
-                                minimumSize: Size(double.infinity, 60), // Increased size
+                                backgroundColor: selectedAnswerIndex ==
+                                        entry.key
+                                    ? (isAnswerSubmitted
+                                        ? (isAnswerCorrect
+                                            ? Colors.green
+                                            : Colors.red)
+                                        : Color(
+                                            0xFFB39DDB)) // Subtle shade of purple
+                                    : Colors.white,
+                                minimumSize:
+                                    Size(double.infinity, 60), // Increased size
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -211,7 +243,8 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                         duration: Duration(seconds: 1),
                         builder: (context, color, child) {
                           return Container(
-                            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 24),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -268,9 +301,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
                   ),
                 ),
                 onPressed: selectedAnswerIndex != null
-                    ? (isAnswerSubmitted
-                        ? nextQuestion
-                        : submitAnswer)
+                    ? (isAnswerSubmitted ? nextQuestion : submitAnswer)
                     : null,
               ),
             ],

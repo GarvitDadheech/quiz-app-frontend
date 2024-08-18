@@ -38,7 +38,6 @@ class _PatternSniperQuizPageState extends State<PatternSniperQuizPage> {
             builder: (context) => QuizQuestionPage(quizId: newQuizId)),
       );
     } catch (e) {
-      // Handle the error (e.g., show an error message)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load the quiz ID: $e')),
       );
