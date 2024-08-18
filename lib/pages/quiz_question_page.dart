@@ -92,7 +92,7 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
   Future<void> updateRecentQuizAttempt(int quizId) async {
     final url = 'http://localhost:8080/update-recent-quiz';
-    final response = await http.post(
+    final response = await http.put(
       Uri.parse(url),
       headers: {
         'Content-Type': 'application/json',
