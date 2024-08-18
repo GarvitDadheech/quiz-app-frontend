@@ -4,16 +4,46 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'homepage.dart';
 
-class QuizResultPage extends StatelessWidget {
+class QuizResultPage extends StatefulWidget {
   final int correctAnswers;
   final int bonusEarned;
   final String timeTaken;
+  final int currentQuizId;
 
   QuizResultPage({
     required this.correctAnswers,
     required this.bonusEarned,
     required this.timeTaken,
+    required this.currentQuizId,
   });
+
+  @override
+  _QuizResultPageState createState() => _QuizResultPageState();
+}
+
+class _QuizResultPageState extends State<QuizResultPage> {
+  List<int> earnedBadgeIds = [];
+  Map<int, String> badgeNames = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _updateData();
+  }
+
+  Future<void> _updateData() async {
+  try {
+    await updateUserCash(widget.bonusEarned);
+    final badgeIds = await updateBadges();
+    final names = await fetchBadgeNames(badgeIds);
+    setState(() {
+      earnedBadgeIds = badgeIds;
+      badgeNames = names;
+    });
+  } catch (e) {
+    print(e.toString());
+  }
+}
 
   Future<double> fetchCurrentCash() async {
     final prefs = await SharedPreferences.getInstance();
@@ -57,11 +87,58 @@ class QuizResultPage extends StatelessWidget {
     }
   }
 
+  Future<List<int>> updateBadges() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+    if (userId == null) {
+      throw Exception('User ID not found. Please log in again.');
+    }
+
+    List<int> badgeIds = [];
+
+    if (widget.correctAnswers >= 9) badgeIds.add(2);
+    if (widget.currentQuizId == 3) badgeIds.add(1);
+    if (widget.correctAnswers == 10) badgeIds.add(3);
+    if (widget.timeTaken.contains(RegExp(r'^([0-2][0-9]|30):([0-5][0-9])$')) && widget.correctAnswers == 8) badgeIds.add(4);
+
+    final response = await http.post(
+      Uri.parse('http://localhost:8080/update-user-badges'),
+      body: json.encode({
+        'user_id': userId,
+        'badge_ids': badgeIds,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update badges');
+    }
+
+    return badgeIds; // Return the list of badge IDs
+  }
+
+  Future<Map<int, String>> fetchBadgeNames(List<int> badgeIds) async {
+  final response = await http.post(
+    Uri.parse('http://localhost:8080/get-badge-names'),
+    body: json.encode({'badge_ids': badgeIds}),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final badgeNamesJson = data['badge_names'] as Map<String, dynamic>; // Ensure correct type
+    final badgeNames = badgeNamesJson.map<int, String>((key, value) {
+      return MapEntry(int.parse(key), value as String);
+    });
+    return badgeNames;
+  } else {
+    throw Exception('Failed to fetch badge names');
+  }
+}
+
   @override
   Widget build(BuildContext context) {
-    // Call the function to update user cash
-    updateUserCash(bonusEarned);
-
     return Scaffold(
       backgroundColor: Color(0xFF9370DB),
       appBar: AppBar(
@@ -101,26 +178,7 @@ class QuizResultPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16, color: Colors.white70),
                     ),
                     SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildResultCard(
-                          icon: '🎯',
-                          title: 'Correct answers',
-                          value: '$correctAnswers/10',
-                        ),
-                        _buildResultCard(
-                          icon: '🎁',
-                          title: 'Bonus earned',
-                          value: '\$$bonusEarned',
-                        ),
-                        _buildResultCard(
-                          icon: '⏱️',
-                          title: 'Time taken',
-                          value: timeTaken,
-                        ),
-                      ],
-                    ),
+                    _buildBadgeAndResults(),
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
@@ -151,6 +209,93 @@ class QuizResultPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildBadgeAndResults() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildResultCard(
+              icon: '🎯',
+              title: 'Correct answers',
+              value: '${widget.correctAnswers}/10',
+            ),
+            _buildResultCard(
+              icon: '🎁',
+              title: 'Bonus earned',
+              value: '\$${widget.bonusEarned}',
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildResultCard(
+              icon: '⏱️',
+              title: 'Time taken',
+              value: widget.timeTaken,
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: earnedBadgeIds.map((badgeId) {
+            return _buildBadgeCard(badgeId: badgeId);
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBadgeCard({required int badgeId}) {
+  final badgeName = badgeNames[badgeId] ?? 'Badge $badgeId'; 
+  return Container(
+    width: 120, 
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.3),
+      borderRadius: BorderRadius.circular(15),
+      border: Border.all(color: Colors.greenAccent, width: 2),
+    ),
+    child: Column(
+      children: [
+        Icon(Icons.emoji_events, size: 40, color: Colors.yellowAccent),
+        SizedBox(height: 10),
+        Text(
+          'Congrats!',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.greenAccent,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'You have earned a new badge:',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white70,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          badgeName,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildResultCard(
       {required String icon, required String title, required String value}) {

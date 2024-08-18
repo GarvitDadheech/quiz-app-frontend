@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/homepage.dart';
 import '../pages/implement_soon_page.dart';
 import '../pages/leaderboard_page.dart';
+import '../pages/profile_page.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -23,20 +24,28 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => HomePage()),
               );
               break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CommonPage()),
+              );
+              break;
+            case 2:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CommonPage()),
+              );
+              break;
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+              break;
             case 4: // Leaderboard
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LeaderboardPage()),
-              );
-              break;
-            case 1:
-            case 2:
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CommonPage(),
-                ),
               );
               break;
           }
@@ -44,12 +53,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
       },
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet), label: 'Portfolio'),
+        BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Portfolio'),
         BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Trade'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
+        BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
       ],
     );
   }

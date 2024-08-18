@@ -77,7 +77,6 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print(data);
       setState(() {
         isAnswerSubmitted = true;
         isAnswerCorrect = data['correct'];
@@ -125,7 +124,8 @@ class _QuizQuestionPageState extends State<QuizQuestionPage> {
           builder: (context) => QuizResultPage(
             correctAnswers: correctAnswersCount,
             bonusEarned: correctAnswersCount * 1000,
-            timeTaken: _formatTime(_elapsedSeconds), // Pass the formatted time
+            timeTaken: _formatTime(_elapsedSeconds),
+            currentQuizId: widget.quizId, // Pass the formatted time
           ),
         ),
       );
